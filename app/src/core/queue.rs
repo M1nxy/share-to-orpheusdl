@@ -1,18 +1,16 @@
+use super::config;
 use chrono::Utc;
 use std::{
   fs,
   sync::{Arc, Mutex},
   time::Duration,
 };
-
 use tokio::{process::Command, time::sleep};
 
-use super::config;
-
+#[derive(Debug, Clone)]
 pub struct Queue {
   pub items: Arc<Mutex<Vec<String>>>,
   timeout: Duration,
-  token: String,
   orpheusdl_path: String,
   orpheusdl_args: Vec<String>,
   debug: bool,
@@ -23,7 +21,6 @@ impl Queue {
     Self {
       items: Arc::new(Mutex::new(Vec::new())),
       timeout: Duration::from_secs(config.timeout.into()),
-      token: config.token,
       orpheusdl_path: config.orpheusdl_path,
       orpheusdl_args: config.orpheusdl_args,
       debug: config.debug,
