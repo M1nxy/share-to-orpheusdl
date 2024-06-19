@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Options</title>
+</head>
+
+<style>
+  body {
+    background-color: #383849;
+    color: white;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  ul {
+    margin: 14px;
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    align-items: center;
+    display: flex;
+    margin: calc(14px * 0.75) 0;
+  }
+
+  label {
+    align-items: center;
+    display: inline-flex;
+    position: relative;
+  }
+
+  .checkbox-input {
+    display: inline-flex;
+  }
+
+  .submit-input {
+    display: flex;
+  }
+
+  .submit-input>p {
+    margin: 0;
+  }
+
+  span>input {
+    margin: 0;
+    margin-right: calc(14px * 0.75);
+  }
+</style>
+
+<body>
+  <ul>
+    <li>
+      <label>
+        <span class="checkbox-input">
+          <input type="checkbox" id="autoconfirm" name="autoconfirm">
+        </span>
+        <span>
+          Automatically confirm downloads
+        </span>
+      </label>
+    </li>
+    <li>
+      <label>
+        <span class="checkbox-input">
+          <input type="checkbox" id="overrideURI" name="overrideURI">
+        </span>
+        <span>
+          Override Tray URI:
+          <input type="text" id="trayURI" name="trayURI">
+        </span>
+      </label>
+    </li>
+    <li>
+      <label>
+        <span>
+          Token:
+          <input type="text" id="token" name="token">
+        </span>
+      </label>
+    </li>
+    <li>
+      <label>
+        <span class="submit-input">
+          <input type="submit" id="submit" name="submit">
+          <p id="status"></p>
+        </span>
+      </label>
+    </li>
+  </ul>
+
+  <script src="options.js"></script>
+</body>
+
+</html>
