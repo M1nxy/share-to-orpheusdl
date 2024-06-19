@@ -1,0 +1,21 @@
+[package]
+name = "orpheusdl-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.7", features = ["derive"] }
+directories = { version = "5.0.1" }
+serde = { version = "1.0.203", features = ["derive"] }
+toml = { version = "0.8.14" }
+simplelog = { version = "0.12.2" }
+log = { version = "0.4.21" }
+chrono = { version = "0.4.38" }
+tokio = { version = "1.38.0", features = [
+  "process",
+  "macros",
+  "rt-multi-thread",
+  "time",
+] }
+tide = "0.16.0"
+http-types = { version = "2.12.0" }
