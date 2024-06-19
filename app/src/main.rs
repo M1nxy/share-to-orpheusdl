@@ -49,6 +49,7 @@ async fn main() {
   let server = server::new(queue.clone(), config.clone());
 
   let server_handle = tokio::task::spawn(async move {
+    info!("Server listening on http://{}:{}", config.host, config.port);
     server
       .listen(format!("{}:{}", config.host, config.port))
       .await
@@ -57,6 +58,4 @@ async fn main() {
   let queue_handle = tokio::task::spawn(async move { queue.process_queue().await });
 
   loop {}
-
-  println!();
 }
