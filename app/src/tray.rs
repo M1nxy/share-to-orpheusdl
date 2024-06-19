@@ -3,10 +3,9 @@ extern crate log;
 extern crate simplelog;
 
 use clap::Parser;
-use tokio::time::sleep;
 
 use core::{config, queue, server, setup_logger};
-use std::{net::Ipv4Addr, time::Duration};
+use std::net::Ipv4Addr;
 
 mod core;
 
@@ -58,20 +57,5 @@ async fn main() {
 
   let queue_handle = tokio::task::spawn(async move { queue.process_queue().await });
 
-  tokio::signal::ctrl_c()
-    .await
-    .expect("failed to listen for keyboard events");
-
-  info!("Shutting down and exiting...");
-
-  server_handle.abort();
-  queue_handle.abort();
-
-  loop {
-    if server_handle.is_finished() || queue_handle.is_finished() {
-      break;
-    } else {
-      sleep(Duration::from_secs(1)).await
-    }
-  }
+  loop {}
 }

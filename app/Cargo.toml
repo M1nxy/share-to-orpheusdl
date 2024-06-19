@@ -1,7 +1,11 @@
 [package]
-name = "orpheusdl-rs"
+name = "orpheusdl"
 version = "0.1.0"
 edition = "2021"
+
+[[bin]]
+name = "orpheusdl-tray"
+path = "src/tray.rs"
 
 [dependencies]
 clap = { version = "4.5.7", features = ["derive"] }
@@ -16,6 +20,7 @@ tokio = { version = "1.38.0", features = [
   "macros",
   "rt-multi-thread",
   "time",
+  "signal"
 ] }
 tide = "0.16.0"
 http-types = { version = "2.12.0" }

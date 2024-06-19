@@ -1,7 +1,6 @@
 use super::{config, queue::Queue};
 use http_types::headers::HeaderValue;
 use serde::Deserialize;
-use std::net::Ipv4Addr;
 use tide::{
   security::{CorsMiddleware, Origin},
   Request, Server, StatusCode,
@@ -14,16 +13,12 @@ struct DownloadRequest {
 
 #[derive(Debug, Clone)]
 pub struct QueueServerState {
-  host: Ipv4Addr,
-  port: u16,
   token: String,
   queue: Queue,
 }
 
 pub fn new(queue: Queue, config: config::Config) -> Server<QueueServerState> {
   let mut app = tide::with_state(QueueServerState {
-    host: config.host,
-    port: config.port,
     token: config.token,
     queue,
   });
