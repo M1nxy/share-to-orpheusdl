@@ -4,7 +4,7 @@ extern crate simplelog;
 
 use clap::Parser;
 
-use core::{config, queue, setup_logger};
+use core::{config, queue, server, setup_logger};
 use std::net::Ipv4Addr;
 
 mod core;
@@ -46,9 +46,17 @@ async fn main() {
   setup_logger();
 
   let queue = queue::Queue::new(config.clone());
-  queue.append("https://tidal.com/browse/album/2118256".to_string());
+  let server = server::new(queue.clone(), config.clone());
 
-  tokio::task::spawn(async move { queue.process_queue().await }).await;
+  let server_handle = tokio::task::spawn(async move {
+    server
+      .listen(format!("{}:{}", config.host, config.port))
+      .await
+  });
+
+  let queue_handle = tokio::task::spawn(async move { queue.process_queue().await });
+
+  loop {}
 
   println!();
 }
