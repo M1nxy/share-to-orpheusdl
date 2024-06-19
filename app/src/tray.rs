@@ -3,9 +3,10 @@ extern crate log;
 extern crate simplelog;
 
 use clap::Parser;
+use tokio::time::sleep;
 
 use core::{config, queue, server, setup_logger};
-use std::net::Ipv4Addr;
+use std::{net::Ipv4Addr, time::Duration};
 
 mod core;
 
@@ -38,12 +39,14 @@ pub struct Cli {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), std::io::Error> {
   let args = Cli::parse();
 
   let config = config::Config::from(args);
 
-  setup_logger();
+  // currently the only difference with this binary, will add tray icon n such at a latter day
+
+  setup_logger(false);
 
   let queue = queue::Queue::new(config.clone());
   let server = server::new(queue.clone(), config.clone());
@@ -57,5 +60,22 @@ async fn main() {
 
   let queue_handle = tokio::task::spawn(async move { queue.process_queue().await });
 
-  loop {}
+  tokio::signal::ctrl_c()
+    .await
+    .expect("failed to listen for keyboard events");
+
+  info!("Shutting down and exiting...");
+
+  server_handle.abort();
+  queue_handle.abort();
+
+  loop {
+    if server_handle.is_finished() || queue_handle.is_finished() {
+      break;
+    } else {
+      sleep(Duration::from_secs(1)).await
+    }
+  }
+
+  Ok(())
 }

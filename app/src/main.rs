@@ -39,12 +39,12 @@ pub struct Cli {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), std::io::Error> {
   let args = Cli::parse();
 
   let config = config::Config::from(args);
 
-  setup_logger();
+  setup_logger(true);
 
   let queue = queue::Queue::new(config.clone());
   let server = server::new(queue.clone(), config.clone());
@@ -74,4 +74,6 @@ async fn main() {
       sleep(Duration::from_secs(1)).await
     }
   }
+
+  Ok(())
 }
