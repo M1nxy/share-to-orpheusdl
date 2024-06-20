@@ -1,10 +1,9 @@
-use super::{config, queue::Queue};
 use http_types::headers::HeaderValue;
 use serde::Deserialize;
-use tide::{
-  security::{CorsMiddleware, Origin},
-  Request, Server, StatusCode,
-};
+use tide::security::{CorsMiddleware, Origin};
+use tide::{Request, Server, StatusCode};
+
+use super::{config, queue::Queue};
 
 #[derive(Debug, Deserialize)]
 struct DownloadRequest {

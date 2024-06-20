@@ -1,75 +1,55 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 #[macro_use]
 extern crate log;
 extern crate simplelog;
 
-use clap::Parser;
-use tokio::time::sleep;
+use tokio::time::{sleep, Duration};
 
-use core::{config, queue, server, setup_logger};
-use std::{net::Ipv4Addr, time::Duration};
+use core::{config, logger, queue, server, traymenu};
 
 mod core;
 
-#[derive(Parser)] // requires `derive` feature
-#[command(version, about, long_about = None)]
-pub struct Cli {
-  #[arg(long)]
-  host: Option<Ipv4Addr>,
-
-  #[arg(long)]
-  port: Option<u16>,
-
-  #[arg(long)]
-  token: Option<String>,
-
-  #[arg(long)]
-  timeout: Option<u8>,
-
-  #[arg(long = "path")]
-  orpheusdl_path: Option<String>,
-
-  #[arg(long = "debug", default_value_t = false)]
-  debug: bool,
-
-  #[arg(long = "save")]
-  save_to_file: bool,
-
-  #[arg(last = true)]
-  orpheusdl_args: Vec<String>,
-}
-
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-  let args = Cli::parse();
+  let config = config::Config::new();
 
-  let config = config::Config::from(args);
-
-  // currently the only difference with this binary, will add tray icon n such at a latter day
-
-  setup_logger(false);
+  logger::setup(config.debug);
 
   let queue = queue::Queue::new(config.clone());
   let server = server::new(queue.clone(), config.clone());
 
   let server_handle = tokio::task::spawn(async move {
-    info!("Server listening on http://{}:{}", config.host, config.port);
-    server
+    info!(
+      "Starting server listening on http://{}:{}",
+      config.host, config.port
+    );
+    let server = server
       .listen(format!("{}:{}", config.host, config.port))
-      .await
+      .await;
+    if (server.is_err()) {
+      error!(
+        "Stopping server listening on http://{}:{}",
+        config.host, config.port
+      );
+    }
   });
 
   let queue_handle = tokio::task::spawn(async move { queue.process_queue().await });
 
-  tokio::signal::ctrl_c()
-    .await
-    .expect("failed to listen for keyboard events");
+  // info!("Shutting down and exiting...");
+  // server_handle.abort();
+  // queue_handle.abort();
 
-  info!("Shutting down and exiting...");
-
-  server_handle.abort();
-  queue_handle.abort();
+  let result = traymenu::run_tray();
 
   loop {
+    if result.is_ok() {
+      info!("Shutting down and exiting...");
+      server_handle.abort();
+      queue_handle.abort();
+    }
+
     if server_handle.is_finished() || queue_handle.is_finished() {
       break;
     } else {

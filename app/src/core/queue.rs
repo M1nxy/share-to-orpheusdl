@@ -1,11 +1,10 @@
-use super::config;
 use chrono::Utc;
-use std::{
-  fs,
-  sync::{Arc, Mutex},
-  time::Duration,
-};
-use tokio::{process::Command, time::sleep};
+use std::fs;
+use std::sync::{Arc, Mutex};
+use tokio::process::Command;
+use tokio::time::{sleep, Duration};
+
+use super::config;
 
 #[derive(Debug, Clone)]
 pub struct Queue {
@@ -42,7 +41,7 @@ impl Queue {
 
       if let Some(url) = current_item {
         let now = Utc::now().format("%Y%m%dT%H%M%S");
-        let cmd = Command::new("python")
+        let cmd = Command::new("pythonw")
           .current_dir(&self.orpheusdl_path)
           .arg("orpheus.py")
           .arg(&url)

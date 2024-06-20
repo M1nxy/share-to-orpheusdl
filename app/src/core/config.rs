@@ -4,8 +4,6 @@ use std::fs;
 use std::net::Ipv4Addr;
 use std::path::PathBuf;
 
-use crate::Cli;
-
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Config {
   pub host: Ipv4Addr,
@@ -15,32 +13,6 @@ pub struct Config {
   pub debug: bool,
   pub orpheusdl_path: String,
   pub orpheusdl_args: Vec<String>,
-}
-
-impl From<Cli> for Config {
-  fn from(args: Cli) -> Self {
-    // get base config file. Also creates file if not exist.
-    let base = Config::new();
-
-    // replace missing args with value from base config.
-    let config = Self {
-      host: args.host.unwrap_or(base.host),
-      port: args.port.unwrap_or(base.port),
-      token: args.token.unwrap_or(base.token),
-      timeout: args.timeout.unwrap_or(base.timeout),
-      debug: args.debug,
-      orpheusdl_path: args.orpheusdl_path.unwrap_or(base.orpheusdl_path),
-      orpheusdl_args: args.orpheusdl_args,
-    };
-
-    // save if specified
-    if args.save_to_file {
-      Self::write_to_file(&config)
-    }
-
-    // return merged config
-    config
-  }
 }
 
 impl Config {
